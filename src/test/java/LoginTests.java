@@ -11,6 +11,7 @@ public class LoginTests extends BaseTest {
     public void LoginEmptyEmailPasswordTest() {
 
 //      Added ChromeOptions argument below to fix websocket error
+        //added comment here to fork
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--remote-allow-origins=*");
 
