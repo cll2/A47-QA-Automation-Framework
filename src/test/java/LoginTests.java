@@ -1,26 +1,42 @@
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
-import java.time.Duration;
-
 public class LoginTests extends BaseTest {
     @Test
-    public void LoginEmptyEmailPasswordTest() {
-
-//      Added ChromeOptions argument below to fix websocket error
-        //added comment here to fork
-        ChromeOptions options = new ChromeOptions();
-        options.addArguments("--remote-allow-origins=*");
-
-        WebDriver driver = new ChromeDriver(options);
-        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
-
-        String url = "https://qa.koel.app/";
-        driver.get(url);
+    public void LoginEmptyEmailPassword() {
+        openLoginUrl();
+        enterEmail("");
+        enterPassword("");
+        clickSubmit();
         Assert.assertEquals(driver.getCurrentUrl(), url);
-        driver.quit();
+        }
+
+    @Test
+    public void LoginValidEmailValidPassword(){
+        //WebElement avatar = driver.findElement(By.cssSelector(".avatar"));
+        openLoginUrl();
+        enterEmail("demo@class.com");
+        enterPassword("te$t$tudent");
+        clickSubmit();
+        //Assert.assertTrue(avatar.isDisplayed());
     }
+
+    @Test
+    public void LoginInvalidEmailValidPassword(){
+        openLoginUrl();
+        enterEmail("wrong@email.com");
+        enterPassword("te$t$tudent");
+        Assert.assertEquals(driver.getCurrentUrl(), url);
+    }
+
+    @Test
+    public void LoginValidEmailInvalidPassword(){
+        openLoginUrl();
+        enterEmail("demo@class.com");
+        enterPassword("wrongPassword");
+        Assert.assertEquals(driver.getCurrentUrl(), url);
+    }
+
+
 }
+
