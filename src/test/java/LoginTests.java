@@ -12,12 +12,13 @@ public class LoginTests extends BaseTest {
         }
 
     @Test
-    public void LoginValidEmailValidPassword(){
+    public void LoginValidEmailValidPassword() throws InterruptedException {
         //WebElement avatar = driver.findElement(By.cssSelector(".avatar"));
         openLoginUrl();
         enterEmail("demo@class.com");
         enterPassword("te$t$tudent");
         clickSubmit();
+        Thread.sleep(10000);
         //Assert.assertTrue(avatar.isDisplayed());
     }
 
