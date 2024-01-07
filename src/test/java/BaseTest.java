@@ -4,9 +4,10 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.interactions.Actions;
+import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.BeforeSuite;
-import org.testng.annotations.AfterMethod;
 
 import java.time.Duration;
 import java.util.UUID;
@@ -155,6 +156,16 @@ public class BaseTest {
         // "div.success.show"
             WebElement notification = driver.findElement(By.cssSelector("div.success.show"));
             return notification.getText();
+        }
+
+        //playing songs helper methods
+        protected void playNextSong() throws InterruptedException {
+            WebElement nextSongButton = driver.findElement(By.cssSelector("i.next.fa.fa-step-forward.control"));
+            Actions action = new Actions(driver);
+            action.moveToElement(nextSongButton).perform();
+            nextSongButton.click();
+            nextSongButton.click();
+            Thread.sleep(20000);
         }
 
 
