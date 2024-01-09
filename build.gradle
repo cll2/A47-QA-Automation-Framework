@@ -17,6 +17,17 @@ dependencies {
 
 test {
     useTestNG() {
-        suites "src/test/resources/HW18.xml"
+        suites "src/test/resources/HW19.xml"
     }
+
+/* task testSmoke(type: Test)
+    useTestNG() {
+        suites "src/test/resources/Smoke.xml"
+    }
+}
+
+task testHomework(type: Test) {
+    useTestNG() {
+        suites "src/test/resources/Homework19.xml"
+    } */
 }

@@ -5,9 +5,7 @@ import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
 import org.openqa.selenium.interactions.Actions;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.BeforeSuite;
+import org.testng.annotations.*;
 
 import java.time.Duration;
 import java.util.UUID;
@@ -15,7 +13,7 @@ import java.util.UUID;
 
 public class BaseTest {
     public static WebDriver driver = null;
-    public static String url = "https://qa.koel.app/";
+    public static String url ="https://qa.koel.app/";
 
     @BeforeSuite
     static void setupClass() {
@@ -23,13 +21,19 @@ public class BaseTest {
     }
 
     @BeforeMethod
-    public void launchBrowser() {
+    @Parameters({"BaseURL"})
+    public void launchBrowser(String BaseURL) {
 //      Added ChromeOptions argument below to fix websocket error
         ChromeOptions options = new ChromeOptions();
-        options.addArguments("--remote-allow-origins=*");
+        options.addArguments("--remote-allow-origins=*"); //allows redirection from http to https
         options.addArguments("start-maximized");
+
         driver = new ChromeDriver(options);
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+
+        url = BaseURL;
+        driver.get(url);
+
     }
 
     @AfterMethod
@@ -37,10 +41,28 @@ public class BaseTest {
         driver.quit();
     }
 
-    //login helper methods
-    protected void openLoginUrl() {
-        driver.get(url);
+    @DataProvider(name="IncorrectLoginProviders")
+    public static Object[][] getIncorrectDataFromDataProviders() {
+        return new Object[][] {
+                {"notExisting@email.com", "NotExistingPassword"},
+                {"demo@class.com", ""},
+                {"", ""}
+        };
+
     }
+
+    @DataProvider(name="CorrectLoginProviders")
+    public static Object[][] getCorrectDataFromDataProviders() {
+        return new Object[][] {
+                {"demo@class.com", "te$t$tudent"},
+                {"chelsea.laurenson@testpro.io", "te$t$tudent"}
+        };
+    }
+    //login helper methods
+    /*protected void openLoginUrl() {
+        //not used as this is captured in the launch browser before method
+        driver.get(url);
+    } */
 
     protected void enterEmail(String email) {
         WebElement emailField = driver.findElement(By.cssSelector("[type = 'email']"));
@@ -138,8 +160,9 @@ public class BaseTest {
 
          protected void clickAddToButton() throws InterruptedException {
         //failed ".btn-add-to")
+             //HW feedback but still fail "//section[@id='songResultsWrapper']//button[@data-test='add-to-btn']"
              //#songResultsWrapper > header > div.song-list-controls > span > button.btn-add-to
-            WebElement addToButton = driver.findElement(By.xpath("songResultsWrapper > header > div.song-list-controls > span > button.btn-add-to"));
+            WebElement addToButton = driver.findElement(By.xpath("//section[@id='songResultsWrapper']//button[@data-test='add-to-btn']"));
             Thread.sleep(20000);
             addToButton.click();
 
@@ -147,15 +170,16 @@ public class BaseTest {
 
         protected void choosePlayList() throws InterruptedException {
         //failed ".playlist>li")
+            //HW feedback to try "//section[@id='songResultsWrapper']//li[contains(text(),'Test Pro Playlist')]"
             WebElement playList = driver.findElement(By.xpath("//*[@id='songResultsWrapper']/header/div[3]/div/section[1]/ul/li[5]"));
             playList.click();
             Thread.sleep(20000);
         }
 
-        protected String getNotificationText() {
+        protected String getSongAddedToPlaylistNotificationText() {
         // "div.success.show"
-            WebElement notification = driver.findElement(By.cssSelector("div.success.show"));
-            return notification.getText();
+            WebElement addedToPlaylistNotification = driver.findElement(By.cssSelector("div.success.show"));
+            return addedToPlaylistNotification.getText();
         }
 
         //playing songs helper methods
@@ -167,6 +191,27 @@ public class BaseTest {
             nextSongButton.click();
             Thread.sleep(20000);
         }
+
+        //playlist actions helper methods
+        protected void selectAPlaylist() {
+        WebElement playList = driver.findElement(By.cssSelector(".playlist:nth-child(5)"));
+        playList.click();
+        }
+
+        protected void deleteSelectedPlayList() {
+            WebElement deleteButton = driver.findElement(By.cssSelector(".btn-delete-playlist"));
+            deleteButton.click();
+        }
+
+        protected void managePopUpWindow() {
+        WebElement confirm = driver.findElement(By.cssSelector("button.ok"));
+        confirm.click();
+        }
+        protected String getSongDeletedFromPlaylistNotification() {
+        WebElement deletedFromPlaylistNotification = driver.findElement(By.cssSelector("div.success.show"));
+        return deletedFromPlaylistNotification.getText();
+        }
+
 
 
 
