@@ -23,4 +23,42 @@ public class LoginTests extends BaseTest {
         Assert.assertEquals(driver.getCurrentUrl(), url);
         driver.quit();
     }
+
+    @Test(dataProvider = "CorrectLoginProviders", dataProviderClass = BaseTest.class)
+    public void LoginValidEmailValidPassword(String email, String password) throws InterruptedException {
+        //WebElement avatar = driver.findElement(By.cssSelector(".avatar"));
+        //openLoginUrl();
+        enterEmail(email);
+        enterPassword(password);
+        clickSubmit();
+        Thread.sleep(10000);
+        //Assert.assertTrue(avatar.isDisplayed());
+    }
+
+    /*commenting out as data provider accomplishes all invalid login scenarios
+    @Test
+    public void LoginInvalidEmailValidPassword(){
+        openLoginUrl();
+        //openLoginUrl();  This function is now captured in launch browser before method
+        enterEmail("wrong@email.com");
+        enterPassword("te$t$tudent");
+        Assert.assertEquals(driver.getCurrentUrl(), url);
+    }
+
+    commenting out as data provider accomplishes all invalid login scenarios
+    @Test
+    public void LoginValidEmailInvalidPassword(){
+        openLoginUrl();
+        //openLoginUrl();  This function is now captured in launch browser before method
+        enterEmail("demo@class.com");
+        enterPassword("wrongPassword");
+        Assert.assertEquals(driver.getCurrentUrl(), url);
+    } */
+
+    @Test(dataProvider = "IncorrectLoginProviders", dataProviderClass = BaseTest.class)
+    public void LoginInvalidEmailInvalidPassword(String email, String password) {
+        enterEmail(email);
+        enterPassword(password);
+        Assert.assertEquals(driver.getCurrentUrl(), url);
+    }
 }
