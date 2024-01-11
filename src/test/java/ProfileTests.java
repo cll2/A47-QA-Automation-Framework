@@ -36,21 +36,46 @@ public class ProfileTests extends BaseTest {
         choosePlayList();
         Assert.assertTrue(getNotificationText().contains(newSongAddedNotification));
         Assert.assertTrue(getSongAddedToPlaylistNotificationText().contains(newSongAddedNotification));
-    }
-    @Test
-    public void playSong() throws InterruptedException {
-        //".bars"
-        //openLoginUrl();  This function is now captured in launch browser before method
-        enterEmail("demo@class.com");
-        enterPassword("te$t$tudent");
-        clickSubmit();
-        playNextSong();
-        WebElement soundBar = driver.findElement(By.cssSelector(".bars"));
-        Thread.sleep(20000);
-        Assert.assertTrue(soundBar.isDisplayed());
     } */
 
 
+    /* @Test (dataProvider = "CorrectLoginCredentials", dataProviderClass = BaseTest.class)
+    public void playSong(String email, String password) throws InterruptedException {
+        //".bars"
+        //openLoginUrl();  This function is now captured in launch browser before method
+        enterEmail(email);
+        enterPassword(password);
+        clickSubmit();
+        playNextSong();
+        WebElement soundBar = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".bars")));
+        Assert.assertTrue(soundBar.isDisplayed());
+    } */
 
+    @Test(dataProvider = "CorrectLoginProviders", dataProviderClass = BaseTest.class)
+    public void countSongsInPlaylist(String email, String password) {
+        enterEmail(email);
+        enterPassword(password);
+        clickSubmit();
+        choosePlaylistByName("Playlist to count songs");
+        displayAllSongs();
+        Assert.assertTrue(getPlaylistDetails().contains(String.valueOf(countSongs())));
     }
+
+
+
+    @Test (dataProvider = "CorrectLoginProviders", dataProviderClass = BaseTest.class)
+    public void deletePlaylist(String email, String password) throws InterruptedException {
+        String playListDeletedNotification = "Deleted playlist";
+        enterEmail(email);
+        enterPassword(password);
+        clickSubmit();
+        //Thread.sleep(2000);
+        selectAPlaylist();
+        deleteSelectedPlayList();
+        //Thread.sleep(2000);
+        managePopUpWindow();
+        //Thread.sleep(2000);
+        Assert.assertTrue(getSongDeletedFromPlaylistNotification().contains(playListDeletedNotification));
+    }
+}
 
