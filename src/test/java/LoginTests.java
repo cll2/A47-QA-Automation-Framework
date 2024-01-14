@@ -1,3 +1,5 @@
+import Pages.HomePage;
+import Pages.LoginPage;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -25,14 +27,11 @@ public class LoginTests extends BaseTest {
     }
 
     @Test(dataProvider = "CorrectLoginProviders", dataProviderClass = BaseTest.class)
-    public void LoginValidEmailValidPassword(String email, String password) throws InterruptedException {
-        //WebElement avatar = driver.findElement(By.cssSelector(".avatar"));
-        //openLoginUrl();
-        enterEmail(email);
-        enterPassword(password);
-        clickSubmit();
-        Thread.sleep(10000);
-        //Assert.assertTrue(avatar.isDisplayed());
+    public void LoginValidEmailValidPasswordTest(String email, String password) throws InterruptedException {
+        LoginPage loginPage = new LoginPage(driver);
+        HomePage homePage = new HomePage(driver);
+        loginPage.login(email, password);
+        //Assert.assertTrue(homePage.getUserAvatar().isDisplayed());
     }
 
     /*commenting out as data provider accomplishes all invalid login scenarios
