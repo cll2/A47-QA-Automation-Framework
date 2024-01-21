@@ -1,3 +1,4 @@
+import Pages.*;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
@@ -21,6 +22,13 @@ public class BaseTest {
     public static String url;
     public static Actions action;
 
+    BasePage basePage = new BasePage(driver);
+    HomePage homePage = new HomePage(driver);
+    LoginPage loginPage = new LoginPage(driver);
+    ProfilePage profilePage = new ProfilePage(driver);
+    SongsPage songsPage  = new SongsPage(driver);
+
+
 
     @BeforeSuite
     static void setupClass() {
@@ -33,9 +41,10 @@ public class BaseTest {
         ChromeOptions options = new ChromeOptions();
         options.addArguments("--remote-allow-origins=*"); //allows redirection from http to https
         options.addArguments("start-maximized");
+        //or driver.manage().window().maximize();
         driver = new ChromeDriver(options);
         //implicit wait is not the best. use explicit wait instead
-        //driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
         wait = new WebDriverWait(driver, Duration.ofSeconds(10));
         url = BaseURL;
         driver.get(url);
@@ -59,65 +68,6 @@ public class BaseTest {
                 /*{"chelsea.laurenson@testpro.io", "te$t$tudent"}  this is not logging me in? */
         };
     }
-    //login helper methods
-    /*protected void openLoginUrl() {
-        //not used as this is captured in the launch browser before method
-        driver.get(url);
-    } */
-    protected void enterEmail(String email) {
-        WebElement emailField = wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("[type = 'email']")));
-        emailField.click();
-        emailField.clear();
-        emailField.sendKeys(email);
-    }
-    protected void enterPassword(String password) {
-        WebElement passwordFiled = wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("[type = 'password']")));
-        passwordFiled.click();
-        passwordFiled.clear();
-        passwordFiled.sendKeys(password);
-    }
-    protected void clickSubmit() {
-        WebElement submitButton = wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("[type = 'submit']")));
-        submitButton.click();
-    }
-
-    //registration helper methods
-    protected void clickRegistrationButton() {
-        WebElement registrationButton = wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("[href='registration']")));
-        registrationButton.click();
-    }
-
-    //profile helper methods
-    protected void clickProfileButton() {
-        //failed selectors
-        // "a.view-profile>span"
-        //".view-profile
-        //"img.avatar"
-        WebElement profileButton = wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("img.avatar")));
-        profileButton.click();
-    }
-
-    protected void enterProfileChangePassword(String password) {
-        WebElement profilePagePasswordField = wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("[name = 'current_password']")));
-        profilePagePasswordField.click();
-        profilePagePasswordField.clear();
-        profilePagePasswordField.sendKeys(password);
-    }
-
-    protected String generateRandomName() {
-        return UUID.randomUUID().toString().replace("-", "");
-
-    }
-    protected void enterNewProfileName(String name) {
-        WebElement profileNameFiled = wait.until(ExpectedConditions.elementToBeClickable(By.id("inputProfileName")));
-        profileNameFiled.click();
-        profileNameFiled.clear();
-        profileNameFiled.sendKeys(name);
-    }
-    protected void clickSaveButton() {
-        WebElement saveButton = wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector(".btn-submit")));
-        saveButton.click();
-    }
 
     //Searching songs helper methods
     protected void searchForASong(String songName) {
@@ -133,7 +83,7 @@ public class BaseTest {
         viewAllButton.click();
         //Thread.sleep(20000);
     }
-    protected void selectFirstSongResult() throws InterruptedException {
+    protected void selectFirstSongResult() {
         //failed "[.song-title>td.title]"
         //"#songResultsWrapper > div > div > div.resize-observer"
         //"#songResultsWrapper > div > div > div.item-container > table > tr"
@@ -196,11 +146,7 @@ public class BaseTest {
     }
 
     protected void managePopUpWindow() {
-        //WebElement confirm = driver.findElement(By.cssSelector("button.ok"));
-        //f (Assert.assertTrue(driver.findElement(By.cssSelector("button.ok")).isDisplayed()) {
-        //driver.findElement(By.cssSelector("button.ok")).click();
-        // confirm.click();
-        //}
+
         try {
             WebElement confirm = wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("button.ok")));
             confirm.click();
@@ -219,7 +165,7 @@ public class BaseTest {
     }
 
     public int countSongs() {
-    return driver.findElements(By.cssSelector("section#playlistWrapper td.title")).size() ;
+        return driver.findElements(By.cssSelector("section#playlistWrapper td.title")).size() ;
     }
 
     protected String getPlaylistDetails() {
@@ -241,6 +187,11 @@ public class BaseTest {
         playlistInputField.sendKeys(Keys.chord(Keys.CONTROL, "A", Keys.BACK_SPACE));
         playlistInputField.sendKeys(newPlayListName);
         playlistInputField.sendKeys(Keys.ENTER);
+    }
+
+    protected String generateRandomName() {
+        return UUID.randomUUID().toString().replace("-", "");
+
     }
 
     public boolean doesPlayListExist() {
