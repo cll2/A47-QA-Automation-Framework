@@ -1,10 +1,14 @@
+import Pages.LoginPage;
+import Pages.ProfilePage;
 import org.testng.annotations.Test;
 
 public class ProfileTests extends BaseTest {
 
     @Test
     public void ChangeProfileName() throws InterruptedException {
+        LoginPage loginPage = new LoginPage(driver);
         loginPage.login("Demo@class.com", "te$t$tudent");
+        ProfilePage profilePage = new ProfilePage(driver);
         profilePage.clickProfileButton();
         profilePage.enterProfileChangePassword("te$t$tudent");
         profilePage.enterNewProfileName(generateRandomName());

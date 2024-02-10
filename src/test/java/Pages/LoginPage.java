@@ -1,10 +1,8 @@
 package Pages;
 
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
-import org.openqa.selenium.support.ui.ExpectedConditions;
 
 
 public class LoginPage extends BasePage {
@@ -18,6 +16,8 @@ public class LoginPage extends BasePage {
     WebElement passwordField;
     @FindBy (css = "[type = 'submit']")
     WebElement submitBtn;
+    @FindBy (css = "[href='registration']")
+    WebElement registrationBtn;
 
     public LoginPage provideEmail(String email) {
         emailField.sendKeys(email);
@@ -35,15 +35,13 @@ public class LoginPage extends BasePage {
     }
 
     public LoginPage login(String email, String password) {
-        provideEmail(email);
-        providePassword(password);
-        clickSubmit();
+        provideEmail(email).providePassword(password).clickSubmit();
         return this;
     }
 
-    public void clickRegistrationButton() {
-        WebElement registrationButton = wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("[href='registration']")));
-        registrationButton.click();
+    public LoginPage clickRegistrationButton() {
+        registrationBtn.click();
+        return this;
     }
 
 

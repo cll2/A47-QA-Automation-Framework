@@ -21,7 +21,7 @@ public class LoginTests extends BaseTest {
 
     @Test
     public void RegistrationNavigation() {
-        loginPage.login("demo@class.com", "te$t$tudent");
+        LoginPage loginPage = new LoginPage(driver);
         loginPage.clickRegistrationButton();
         Assert.assertEquals(driver.getCurrentUrl(), "https://qa.koel.app/registration");
 

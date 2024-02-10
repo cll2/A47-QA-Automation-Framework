@@ -1,4 +1,3 @@
-import Pages.*;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
@@ -6,6 +5,9 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.edge.EdgeDriver;
+import org.openqa.selenium.edge.EdgeOptions;
+import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -22,27 +24,54 @@ public class BaseTest {
     public static String url;
     public static Actions action;
 
-    BasePage basePage = new BasePage(driver);
+    /*BasePage basePage = new BasePage(driver);
     HomePage homePage = new HomePage(driver);
     LoginPage loginPage = new LoginPage(driver);
     ProfilePage profilePage = new ProfilePage(driver);
-    SongsPage songsPage  = new SongsPage(driver);
+    SongsPage songsPage  = new SongsPage(driver); */
 
 
 
+    /* this isnt needed with our pick browser method
     @BeforeSuite
     static void setupClass() {
         WebDriverManager.chromedriver().setup();
+        //WebDriverManager is the automation of driver management.
+        //To use it, we need to select a given manager in the WebDriverManager API
+        //e.g., chromedriver(), firefoxdriver() and invoke the method setup()
+    } */
+
+    //adding this method for dynamic browser selection
+    public static WebDriver pickBrowser(String browser) {
+        switch(browser){
+            case "firefox":
+                WebDriverManager.firefoxdriver().setup();
+                return driver = new FirefoxDriver();
+            case "edge":
+                WebDriverManager.edgedriver().setup();
+                EdgeOptions edgeOptions = new EdgeOptions();
+                edgeOptions.addArguments("--remote-allow-origins=*");
+                edgeOptions.addArguments("start-maximized");
+                return driver = new EdgeDriver(edgeOptions);
+            default:
+                WebDriverManager.chromedriver().setup();
+                ChromeOptions chromeOptions = new ChromeOptions();
+                chromeOptions.addArguments("--remote-allow-origins=*");
+                chromeOptions.addArguments("start-maximized");
+                return driver = new ChromeDriver(chromeOptions);
+        }
     }
     @BeforeMethod
     @Parameters({"BaseURL"})
     public void launchBrowser(String BaseURL) {
 //      Added ChromeOptions argument below to fix websocket error
-        ChromeOptions options = new ChromeOptions();
-        options.addArguments("--remote-allow-origins=*"); //allows redirection from http to https
-        options.addArguments("start-maximized");
+        //dont need this here now, with the pick browser method
+        // ChromeOptions options = new ChromeOptions();
+        //options.addArguments("--remote-allow-origins=*"); //allows redirection from http to https
+        //options.addArguments("start-maximized");
         //or driver.manage().window().maximize();
-        driver = new ChromeDriver(options);
+        //driver = new ChromeDriver(options); selenium grid will use dynamic input values for browser
+        driver = pickBrowser(System.getProperty("browser"));
         //implicit wait is not the best. use explicit wait instead
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
         wait = new WebDriverWait(driver, Duration.ofSeconds(10));
