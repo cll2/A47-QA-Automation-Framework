@@ -9,10 +9,17 @@ import org.openqa.selenium.edge.EdgeDriver;
 import org.openqa.selenium.edge.EdgeOptions;
 import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.remote.RemoteWebDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import org.testng.annotations.*;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.DataProvider;
+import org.testng.annotations.Parameters;
 
+import java.net.MalformedURLException;
+import java.net.URI;
 import java.time.Duration;
 import java.util.List;
 import java.util.UUID;
@@ -42,17 +49,33 @@ public class BaseTest {
     } */
 
     //adding this method for dynamic browser selection
-    public static WebDriver pickBrowser(String browser) {
+    public static WebDriver pickBrowser(String browser) throws MalformedURLException {
+        DesiredCapabilities caps = new DesiredCapabilities();
+        String gridURL = "http://192.168.254.71:4444";
         switch(browser){
-            case "firefox":
+            case "firefox": //gradle clean test -Dbrowser=firefox
                 WebDriverManager.firefoxdriver().setup();
                 return driver = new FirefoxDriver();
-            case "edge":
+
+            case "edge":  //gradle clean test -Dbrowser=MicrosoftEdge
                 WebDriverManager.edgedriver().setup();
                 EdgeOptions edgeOptions = new EdgeOptions();
                 edgeOptions.addArguments("--remote-allow-origins=*");
                 edgeOptions.addArguments("start-maximized");
                 return driver = new EdgeDriver(edgeOptions);
+
+            case "grid-edge": //gradle clean test- Dbrowser=grid-edge
+                caps.setCapability("browserName", "MicrosoftEdge");
+                return driver = new RemoteWebDriver(URI.create(gridURL).toURL(), caps);
+
+            case "grid-firefox": //gradle clean test -Dbrowser= grid-firefox
+                caps.setCapability("browserName", "firefox");
+                return driver = new RemoteWebDriver(URI.create(gridURL).toURL(), caps);
+
+            case "grid-chrome": //gradle clean test -Dbrowser=grid-chrome
+                caps.setCapability("browserName", "chrome");
+                return driver = new RemoteWebDriver(URI.create(gridURL).toURL(), caps);
+
             default:
                 WebDriverManager.chromedriver().setup();
                 ChromeOptions chromeOptions = new ChromeOptions();
@@ -63,7 +86,7 @@ public class BaseTest {
     }
     @BeforeMethod
     @Parameters({"BaseURL"})
-    public void launchBrowser(String BaseURL) {
+    public void launchBrowser(String BaseURL) throws MalformedURLException {
 //      Added ChromeOptions argument below to fix websocket error
         //dont need this here now, with the pick browser method
         // ChromeOptions options = new ChromeOptions();
