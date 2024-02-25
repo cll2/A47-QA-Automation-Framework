@@ -20,7 +20,9 @@ import org.testng.annotations.Parameters;
 
 import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URL;
 import java.time.Duration;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
@@ -30,6 +32,8 @@ public class BaseTest {
     public static WebDriverWait wait;
     public static String url;
     public static Actions action;
+
+    public static final ThreadLocal<WebDriver> threadDriver = new ThreadLocal<WebDriver>();
 
     /*BasePage basePage = new BasePage(driver);
     HomePage homePage = new HomePage(driver);
@@ -76,12 +80,16 @@ public class BaseTest {
                 caps.setCapability("browserName", "chrome");
                 return driver = new RemoteWebDriver(URI.create(gridURL).toURL(), caps);
 
+            case "cloud":
+                return lambdaTest();
+
             default:
                 WebDriverManager.chromedriver().setup();
                 ChromeOptions chromeOptions = new ChromeOptions();
                 chromeOptions.addArguments("--remote-allow-origins=*");
                 chromeOptions.addArguments("start-maximized");
                 return driver = new ChromeDriver(chromeOptions);
+
         }
     }
     @BeforeMethod
@@ -94,16 +102,19 @@ public class BaseTest {
         //options.addArguments("start-maximized");
         //or driver.manage().window().maximize();
         //driver = new ChromeDriver(options); selenium grid will use dynamic input values for browser
-        driver = pickBrowser(System.getProperty("browser"));
+
+        //driver = pickBrowser(System.getProperty("browser"));
+        threadDriver.set(pickBrowser(System.getProperty("browser")));
         //implicit wait is not the best. use explicit wait instead
-        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+        getDriver().manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
         wait = new WebDriverWait(driver, Duration.ofSeconds(10));
         url = BaseURL;
-        driver.get(url);
+        getDriver().get(url);
     }
     @AfterMethod
     public void closeBrowser() {
-        driver.quit();
+        getDriver().quit();
+        threadDriver.remove();
     }
     @DataProvider(name="IncorrectLoginProviders")
     public static Object[][] getIncorrectDataFromDataProviders() {
@@ -112,6 +123,27 @@ public class BaseTest {
                 {"demo@class.com", ""},
                 {"", ""}
         };
+    }
+
+    public WebDriver getDriver() {
+        return threadDriver.get();
+    }
+
+    public static WebDriver lambdaTest() throws MalformedURLException {
+        String hubURL="https:hub.lambdatest.com/wd/hub";  //found on github
+
+        ChromeOptions browserOptions = new ChromeOptions();
+        browserOptions.setPlatformName("Windows 10");
+        browserOptions.setBrowserVersion("114.0");
+        HashMap<String, Object> ltOptions = new HashMap<String, Object>();
+        ltOptions.put("username", "cll2");
+        ltOptions.put("accessKey", "FHu3fpjupo2UlV2o5dZZE2r29ufWTkPpIwtFTfFe3CIiS5z47x");
+        ltOptions.put("project", "Untitled");
+        ltOptions.put("selenium_version", "4.0.0");
+        ltOptions.put("w3c", true);
+        browserOptions.setCapability("LT:Options", ltOptions);
+
+        return new RemoteWebDriver(new URL(hubURL), browserOptions);
     }
     @DataProvider(name="CorrectLoginProviders")
     public static Object[][] getCorrectDataFromDataProviders() {
@@ -186,7 +218,7 @@ public class BaseTest {
     }
 
     protected void doubleClickAPlaylist() {
-        action = new Actions(driver);
+        action = new Actions(getDriver());
         WebElement playListFromSideBar = wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector(".playlist:nth-child(5)")));
         action.doubleClick(playListFromSideBar);
     }
