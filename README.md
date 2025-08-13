@@ -1,9 +1,9 @@
-<h1>Test Pro A47 Class Automation Framework Repository</h1><br>
+<h1>Koel-Music-App-Automation</h1><br>
 
-Welcome to the Test Pro A47 Class Automation Framework repository! <br>
+Welcome to the Koel-Music-App-Automation repository! <br>
 
 <h2>Overview</h2>
-This repository contains the Test Pro  A47 Class Automation Framework, which serves as an educational tool for students' homework and live class demonstrations.
+This repository contains a Java-based test automation framework built using Selenium WebDriver, TestNG, and Gradle. The framework demonstrates best practices in automation design, including the Page Object Model (POM), reusable methods, and maintainable test structures. It can be used as a template for building automated UI and API tests for web applications.
 
 <h2>Getting Started</h2>
 If you're a student enrolled in the A47 class, follow these steps to get started with the A47 Class Automation Framework:<br><br>

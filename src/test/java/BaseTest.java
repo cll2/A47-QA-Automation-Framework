@@ -1,12 +1,96 @@
 import io.github.bonigarcia.wdm.WebDriverManager;
+import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
-import org.testng.annotations.BeforeSuite;
+import org.openqa.selenium.edge.EdgeDriver;
+import org.openqa.selenium.edge.EdgeOptions;
+import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.remote.DesiredCapabilities;
+import org.openqa.selenium.remote.RemoteWebDriver;
+import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.WebDriverWait;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.DataProvider;
+import org.testng.annotations.Parameters;
+
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URL;
+import java.time.Duration;
+import java.util.HashMap;
+import java.util.List;
+import java.util.UUID;
+
 
 public class BaseTest {
+    public static WebDriver driver;
+    public static WebDriverWait wait;
+    public static String url;
+    public static Actions action;
 
+    public static final ThreadLocal<WebDriver> threadDriver = new ThreadLocal<WebDriver>();
+
+    /*BasePage basePage = new BasePage(driver);
+    HomePage homePage = new HomePage(driver);
+    LoginPage loginPage = new LoginPage(driver);
+    ProfilePage profilePage = new ProfilePage(driver);
+    SongsPage songsPage  = new SongsPage(driver); */
+
+
+
+    /* this isnt needed with our pick browser method
     @BeforeSuite
     static void setupClass() {
         WebDriverManager.chromedriver().setup();
+        //WebDriverManager is the automation of driver management.
+        //To use it, we need to select a given manager in the WebDriverManager API
+        //e.g., chromedriver(), firefoxdriver() and invoke the method setup()
+    } */
+
+    //adding this method for dynamic browser selection
+    public static WebDriver pickBrowser(String browser) throws MalformedURLException {
+        DesiredCapabilities caps = new DesiredCapabilities();
+        String gridURL = "http://192.168.254.71:4444";
+        switch(browser){
+            case "firefox": //gradle clean test -Dbrowser=firefox
+                WebDriverManager.firefoxdriver().setup();
+                return driver = new FirefoxDriver();
+
+            case "edge":  //gradle clean test -Dbrowser=MicrosoftEdge
+                WebDriverManager.edgedriver().setup();
+                EdgeOptions edgeOptions = new EdgeOptions();
+                edgeOptions.addArguments("--remote-allow-origins=*");
+                edgeOptions.addArguments("start-maximized");
+                return driver = new EdgeDriver(edgeOptions);
+
+            case "grid-edge": //gradle clean test- Dbrowser=grid-edge
+                caps.setCapability("browserName", "MicrosoftEdge");
+                return driver = new RemoteWebDriver(URI.create(gridURL).toURL(), caps);
+
+            case "grid-firefox": //gradle clean test -Dbrowser= grid-firefox
+                caps.setCapability("browserName", "firefox");
+                return driver = new RemoteWebDriver(URI.create(gridURL).toURL(), caps);
+
+            case "grid-chrome": //gradle clean test -Dbrowser=grid-chrome
+                caps.setCapability("browserName", "chrome");
+                return driver = new RemoteWebDriver(URI.create(gridURL).toURL(), caps);
+
+            case "cloud":
+                return lambdaTest();
+
+            default:
+                WebDriverManager.chromedriver().setup();
+                ChromeOptions chromeOptions = new ChromeOptions();
+                chromeOptions.addArguments("--remote-allow-origins=*");
+                chromeOptions.addArguments("start-maximized");
+                return driver = new ChromeDriver(chromeOptions);
+
+        }
     }
     @BeforeMethod
     @Parameters({"BaseURL"})
@@ -17,7 +101,11 @@ public class BaseTest {
         //options.addArguments("--remote-allow-origins=*"); //allows redirection from http to https
         //options.addArguments("start-maximized");
         //or driver.manage().window().maximize();
+
         //**basic** driver = new ChromeDriver(options); selenium grid will use dynamic input values for browser
+
+        //driver = new ChromeDriver(options); selenium grid will use dynamic input values for browser
+
 
         //driver = pickBrowser(System.getProperty("browser"));
         threadDriver.set(pickBrowser(System.getProperty("browser")));
