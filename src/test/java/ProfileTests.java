@@ -14,7 +14,9 @@ public class ProfileTests extends BaseTest {
         profilePage.enterNewProfileName(generateRandomName());
     }
 
-    /* @Test
+    /*
+    @Test
+     /*
     public void addSongToPlaylist() throws InterruptedException {
         String newSongAddedNotification = "Added 1 song into 'Emo Playlist.'";
         openLoginUrl();
@@ -22,13 +24,11 @@ public class ProfileTests extends BaseTest {
         enterEmail("demo@class.com");
         enterPassword("te$t$tudent");
         clickSubmit();
-    public void addSongToPlaylist() throws InterruptedException {
-        clickViewAllButton();
-        clickAddToButton();
-        choosePlayList();
-        Assert.assertTrue(getNotificationText().contains(newSongAddedNotification));
-        Assert.assertTrue(getSongAddedToPlaylistNotificationText().contains(newSongAddedNotification));
-    } */
+
+    }
+
+     */
+
 
 
     /* @Test //(dataProvider = "CorrectLoginCredentials", dataProviderClass = BaseTest.class)
